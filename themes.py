@@ -16,14 +16,23 @@ QLineEdit, QSpinBox {
 }
 
 QPushButton {
-    background-color: #4CAF50;
-    color: white;
+    background-color: #66ff99;
+    color: black;
     padding: 6px;
     border-radius: 8px;
 }
 
 QPushButton:hover {
-    background-color: #45a049;
+    background-color: #99ffcc;
+}
+
+QCheckBox::indicator {
+            width: 30px;
+            height: 30px;
+}
+QCheckBox::indicator:unchecked {
+    background-color: #99ff99;
+    border-radius: 6px;
 }
 """
 
@@ -44,13 +53,23 @@ QLineEdit, QSpinBox {
 }
 
 QPushButton {
-    background-color: #6a9fb5;
+    background-color: #00802b;
     color: white;
     padding: 6px;
     border-radius: 8px;
 }
 
 QPushButton:hover {
-    background-color: #5a8fa5;
+    background-color: #009933;
+}
+
+QCheckBox::indicator {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+}
+QCheckBox::indicator:checked {
+    background-color: #006622;
+    image: url(icons/checkmark.png);
 }
 """
