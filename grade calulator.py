@@ -1,6 +1,9 @@
 import sys
 from PyQt5.QtWidgets import *
 
+from themes import LIGHT_THEME, DARK_THEME
+
+
 class GradeCategory(QWidget):
     def __init__(self, name):
         super().__init__()
@@ -72,6 +75,13 @@ class GradeCalculator(QWidget):
 
         layout = QVBoxLayout()
 
+        self.dark_mode = False
+
+        self.theme_button = QPushButton("Toggle Dark Mode")
+        self.theme_button.clicked.connect(self.toggle_theme)
+        layout.addWidget(self.theme_button)
+
+
         # Scroll area (useful if many assignments)
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -103,6 +113,15 @@ class GradeCalculator(QWidget):
         layout.addWidget(self.result_label)
 
         self.setLayout(layout)
+
+    def toggle_theme(self):
+        self.dark_mode = not self.dark_mode
+
+        if self.dark_mode:
+            self.setStyleSheet(DARK_THEME)
+        else:
+            self.setStyleSheet(LIGHT_THEME)
+
 
     def calculate_grade(self):
         total = 0
