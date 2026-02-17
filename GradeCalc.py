@@ -1,4 +1,6 @@
 import sys
+import os
+import json
 from PyQt5.QtWidgets import *
 from themes import LIGHT_THEME, DARK_THEME
 
@@ -80,6 +82,14 @@ class GradeCalculator(QWidget): #controls app window (theme, categories, final g
 
         layout.addWidget(self.theme_switch)
 
+        self.save_button = QPushButton("Save Grades")
+        self.save_button.clicked.connect(self.save_grades)
+        layout.addWidget(self.save_button)
+
+        self.load_button = QPushButton("Load Grades")
+        self.load_button.clicked.connect(self.load_grades)
+        layout.addWidget(self.load_button)
+
 
         # scroll area for if there are many assignments
         scroll = QScrollArea()
@@ -113,6 +123,9 @@ class GradeCalculator(QWidget): #controls app window (theme, categories, final g
 
         self.setLayout(layout)
 
+        self.save_folder = "saves"
+        os.makedirs(self.save_folder, exist_ok=True)
+
     def toggle_theme(self):
         self.dark_mode = not self.dark_mode
 
@@ -120,6 +133,67 @@ class GradeCalculator(QWidget): #controls app window (theme, categories, final g
             self.setStyleSheet(DARK_THEME)
         else:
             self.setStyleSheet(LIGHT_THEME)
+
+    def save_grades(self):
+
+        filename, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save Grades As",
+            os.path.join(self.save_folder, "grades.json"),
+            "JSON Files (*.json)"
+        )
+
+        if not filename:
+            return
+        
+        self.current_file = filename
+
+        data = {}
+
+        for cat in self.categories:
+            grades = []
+
+            for field in cat.grade_inputs:
+                try:
+                    grades.append(float(field.text()))
+                except:
+                    pass
+
+            data[cat.name] = {
+                "weight": cat.get_weight(),
+                "grades": grades
+            }
+
+        with open(filename, "w") as f:
+            json.dump(data, f, indent=4)
+
+    def load_grades(self):
+
+        filename, _ = QFileDialog.getOpenFileName(
+            self, "Load Grades", self.save_folder, "JSON Files (*.json)"
+        )
+
+        if not filename:
+            return
+
+        with open(filename, "r") as f:
+            data = json.load(f)
+
+        for cat in self.categories:
+
+            if cat.name not in data:
+                continue
+
+            cat_data = data[cat.name]
+
+            cat.weight_input.setText(str(cat_data["weight"]))
+
+            grades = cat_data["grades"]
+
+            cat.count_spin.setValue(len(grades))
+
+            for field, grade in zip(cat.grade_inputs, grades):
+                field.setText(str(grade))
 
 
     def calculate_grade(self): #calculates the final grade
